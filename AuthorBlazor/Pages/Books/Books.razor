@@ -1,0 +1,122 @@
+@page "/books"
+@using Frontend.Data
+@using Frontend.Models
+@inject IAuthorService _authorService
+@inject IBookService _bookService
+<section>
+    <h3>Books</h3>
+    <div class="d-flex justify-content-end">
+        <input
+            placeholder="Search by book title"
+            class="mr-3"
+            type="text"
+            @oninput="@((arg) => FilterByBookTitle(arg))"/>
+        <input
+            placeholder="Search by author"
+            type="text"
+            @oninput="@((arg) => FilterByAuthor(arg))"/>
+
+    </div>
+    @if (_authors == null)
+    {
+        <p>
+            <em>Loading...</em>
+        </p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Isbn</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Publication Year</th>
+                <th>Nr of pages</th>
+                <th>Genre</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var author in _authorsToShow)
+            {
+                @if (author.Books != null && author.Books.Count != 0)
+                {
+                    @foreach (var book in author.Books)
+                    {
+                        <tr>
+                            <td>@book.Isbn</td>
+                            <td>@book.Title</td>
+                            <td>@author.FirstName @author.LastName</td>
+                            <td>@book.PublicationYear</td>
+                            <td>@book.NrOfPages</td>
+                            <td>@book.Genre</td>
+                            <td>
+                                <button class="btn-danger" @onclick="@(e => DeleteBookAsync(book.Isbn))">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+            </tbody>
+        </table>
+    }
+</section>
+
+@code {
+    private IList<Author> _authors;
+    private IList<Author> _authorsToShow;
+    private string _filterByAuthor;
+    private string _filterByBookTitle;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _authors = await _authorService.GetAuthorsAsync();
+        _authorsToShow = _authors;
+    }
+
+    private void FilterByAuthor(ChangeEventArgs changeEventArgs)
+    {
+        _filterByAuthor = null;
+        try
+        {
+            if (changeEventArgs.Value != null) _filterByAuthor = changeEventArgs.Value.ToString();
+        }
+        catch (Exception e)
+        {
+    //
+        }
+        ExecuteFilter();
+    }
+
+    private void FilterByBookTitle(ChangeEventArgs changeEventArgs)
+    {
+        _filterByBookTitle = null;
+        try
+        {
+            if (changeEventArgs.Value != null) _filterByBookTitle = changeEventArgs.Value.ToString();
+        }
+        catch (Exception e)
+        {
+    //
+        }
+        ExecuteFilter();
+    }
+
+    private void ExecuteFilter()
+    {
+        _authorsToShow = _authors.Where(a =>
+            a.Books.Any(b => _filterByBookTitle != null && b.Title.ToLower().Contains(_filterByBookTitle.ToLower()) || _filterByBookTitle == null) &&
+            (_filterByAuthor != null && a.FirstName.ToLower().Contains(_filterByAuthor.ToLower()) || _filterByAuthor == null || _filterByAuthor != null && a.LastName.ToLower().Contains(_filterByAuthor.ToLower()) || _filterByAuthor == null)).ToList();
+    }
+
+    private async Task DeleteBookAsync(int isbn)
+    {
+        await _bookService.DeleteBookAsync(isbn);
+        _authors = await _authorService.GetAuthorsAsync();
+        _authorsToShow = _authors;
+        StateHasChanged();
+    }
+
+}

@@ -1,0 +1,53 @@
+@page "/authors"
+@using Frontend.Data
+@using Frontend.Models
+@inject IAuthorService _authorService
+<h1>Authors</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (_authors == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Nr of Books</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var author in _authors)
+        {
+            <tr>
+                <td>@author.Id</td>
+                <td>@author.FirstName</td>
+                <td>@author.LastName</td>
+
+                <td>@author.Books.Count</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    private IList<Author> _authors;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _authors = await _authorService.GetAuthorsAsync();
+    }
+
+}
+
+

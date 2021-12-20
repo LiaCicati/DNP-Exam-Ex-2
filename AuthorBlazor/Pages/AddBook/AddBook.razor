@@ -1,0 +1,79 @@
+@page "/addBook"
+@inject IAuthorService _authorService
+@inject IBookService _bookService
+@inject NavigationManager NavigationManager
+@using Frontend.Models
+@using Microsoft.AspNetCore.Components
+@using Frontend.Data
+<section>
+    <h3>Add Book</h3>
+    <EditForm Model="@_newBook" OnValidSubmit="@AddNewBookAsync">
+        <div class="form-group">
+            Author: <br/>
+            <InputSelect @bind-Value="@_authorId">
+                <option value="">-- Select --</option>
+                @foreach (Author _author in _authors)
+                {
+                    <option value="@_author.Id">@_author.FirstName @_author.LastName</option>
+                }
+            </InputSelect>
+        </div>
+        
+        <div class="form-group">
+            Title:<br/>
+            <InputText @bind-Value="_newBook.Title"/>
+        </div>
+        <div class="form-group">
+            Publication Year:<br/>
+            <InputNumber @bind-Value="_newBook.PublicationYear"/>
+        </div>
+        <div class="form-group">
+            Nr of pages:<br/>
+            <InputNumber @bind-Value="_newBook.NrOfPages"/>
+        </div>
+        <div class="form-group">
+            Genre:<br/>
+            <InputText @bind-Value="_newBook.Genre"/>
+        </div>
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+        <p class="text-danger">@_errorMessage</p>
+        <p class="actions">
+            <button class="btn btn-outline-dark" type="submit">Create</button>
+        </p>
+    </EditForm>
+</section>
+
+@code {
+    private Book _newBook = new Book();
+    private IList<Author> _authors = new List<Author>();
+    private int _authorId;
+    private string _errorMessage;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _authors = await _authorService.GetAuthorsAsync();
+    }
+
+    private async Task AddNewBookAsync()
+    {
+        try
+        {
+            if (_authorId != 0)
+            {
+                await _bookService.AddBookAsync(_authorId, _newBook);
+                NavigationManager.NavigateTo("/books");
+            }
+            else
+            {
+                _errorMessage = "Please select an author from the list";
+            }
+        }
+        catch (Exception e)
+        {
+            _errorMessage = e.Message;
+        }
+    }
+
+}
