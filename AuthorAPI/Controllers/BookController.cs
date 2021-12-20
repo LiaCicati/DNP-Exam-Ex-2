@@ -40,7 +40,7 @@ namespace AuthorAPI.Controllers
             try
             {
                 Book added = await _bookRepository.AddBookAsync(authorId, book);
-                return Ok(added);
+                return Created($"/{added.Isbn}", added);
             }
             catch (Exception e)
             {
