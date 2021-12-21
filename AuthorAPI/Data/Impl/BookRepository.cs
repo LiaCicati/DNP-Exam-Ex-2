@@ -32,11 +32,42 @@ namespace AuthorAPI.Data.Impl
 
         public async Task<Book> DeleteBookAsync(int isbn)
         {
-            Book toRemove = await _ctx.Books.FirstAsync(a => a.Isbn == isbn);
-            Console.WriteLine(JsonSerializer.Serialize(toRemove));
-            _ctx.Remove(toRemove);
-            await _ctx.SaveChangesAsync();
+            Book toRemove = await _ctx.Books.FirstOrDefaultAsync(b => b.Isbn == isbn);
+            if (toRemove != null)
+            {
+                _ctx.Remove(toRemove);
+                await _ctx.SaveChangesAsync();
+            }
+
             return toRemove;
+        }
+
+        public async Task<Book> GetBookByIsbnAsync(int isbn)
+        {
+          return await _ctx.Books.FirstAsync(b => b.Isbn == isbn);
+        }
+
+        public async Task<Book> UpdateBookAsync(Book book)
+        {
+            try
+            {
+                Book toUpdate = await _ctx.Books.FirstAsync(b => b.Isbn == book.Isbn);
+                // toUpdate = book;
+                toUpdate.Title = book.Title;
+                toUpdate.NumOfPages = book.NumOfPages;
+                toUpdate.PublicationYear = book.PublicationYear;
+                toUpdate.Genre = book.Genre;
+                Console.WriteLine(toUpdate.Isbn + toUpdate.Title);
+                _ctx.Update(toUpdate);
+                await _ctx.SaveChangesAsync();
+                return toUpdate;
+            }
+            catch (Exception e)
+            {
+                // throw new Exception($"Did not find todo with isbn {book.Isbn}");
+                Console.WriteLine(e.Message);
+                throw new Exception(e.Message);
+            }
         }
     }
 }

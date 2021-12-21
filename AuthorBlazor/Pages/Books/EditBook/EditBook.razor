@@ -1,16 +1,18 @@
-@page "/addBook"
-@inject IAuthorService _authorService
+@page "/books/{bookIsbn:int}/editBook"
 @inject IBookService _bookService
-@inject NavigationManager NavigationManager
+@inject IAuthorService _authorService
+@inject NavigationManager _navigationManager
 @using Microsoft.AspNetCore.Components
 @using AuthorBlazor.Data
 @using AuthorBlazor.Models
+
+
 <section>
-    <h3>Add Book</h3>
-    <EditForm Model="@_newBook" OnValidSubmit="@AddNewBookAsync">
+    <h3>Edit Book</h3>
+    <EditForm Model="@_book" OnValidSubmit="@Save">
         <div class="form-group">
             Author: <br/>
-            <InputSelect @bind-Value="@_authorId">
+            <InputSelect @bind-Value="@_book.AuthorId">
                 <option value="">-- Select --</option>
                 @foreach (Author _author in _authors)
                 {
@@ -18,22 +20,22 @@
                 }
             </InputSelect>
         </div>
-        
+
         <div class="form-group">
             Title:<br/>
-            <InputText @bind-Value="_newBook.Title"/>
+            <InputText @bind-Value="_book.Title"/>
         </div>
         <div class="form-group">
             Publication Year:<br/>
-            <InputNumber @bind-Value="_newBook.PublicationYear"/>
+            <InputNumber @bind-Value="_book.PublicationYear"/>
         </div>
         <div class="form-group">
             Nr of pages:<br/>
-            <InputNumber @bind-Value="_newBook.NrOfPages"/>
+            <InputNumber @bind-Value="_book.NrOfPages"/>
         </div>
         <div class="form-group">
             Genre:<br/>
-            <InputText @bind-Value="_newBook.Genre"/>
+            <InputText @bind-Value="_book.Genre"/>
         </div>
         <DataAnnotationsValidator/>
         <ValidationSummary/>
@@ -45,34 +47,31 @@
 </section>
 
 @code {
-    private Book _newBook = new Book();
-    private IList<Author> _authors = new List<Author>();
-    private int _authorId;
+
+    [Parameter]
+    public int BookIsbn { get; set; }
+
     private string _errorMessage;
-
-
+    private Book _book = new Book();
+    private IList<Author> _authors = new List<Author>();
+ 
     protected override async Task OnInitializedAsync()
     {
         _authors = await _authorService.GetAuthorsAsync();
+        _book = await _bookService.GetBookByIsbnAsync(BookIsbn);
     }
 
-    private async Task AddNewBookAsync()
+    private async Task Save()
     {
         try
         {
-            if (_authorId != 0)
-            {
-                await _bookService.AddBookAsync(_authorId, _newBook);
-                NavigationManager.NavigateTo("/books");
-            }
-            else
-            {
-                _errorMessage = "Please select an author from the list";
-            }
+            await _bookService.UpdateBookAsync(_book);
+            _navigationManager.NavigateTo($"/books");
         }
         catch (Exception e)
         {
             _errorMessage = e.Message;
+            StateHasChanged();
         }
     }
 

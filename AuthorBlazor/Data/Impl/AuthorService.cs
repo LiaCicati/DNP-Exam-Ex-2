@@ -4,9 +4,10 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Frontend.Models;
+using AuthorBlazor.Models;
 
-namespace Frontend.Data.Impl
+
+namespace AuthorBlazor.Data.Impl
 {
     public class AuthorService : IAuthorService
     {

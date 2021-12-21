@@ -1,6 +1,6 @@
 @page "/books"
-@using Frontend.Data
-@using Frontend.Models
+@using AuthorBlazor.Data
+@using AuthorBlazor.Models
 @inject IAuthorService _authorService
 @inject IBookService _bookService
 <section>
@@ -53,6 +53,11 @@
                             <td>@book.Genre</td>
                             <td>
                                 <button class="btn-danger" @onclick="@(e => DeleteBookAsync(book.Isbn))">Delete</button>
+                            </td>
+                            <td>
+                                <a href="@($"/books/{book.Isbn}/editBook")">
+                                    Edit
+                                </a>
                             </td>
                         </tr>
                     }

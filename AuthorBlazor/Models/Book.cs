@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Frontend.Models
+namespace AuthorBlazor.Models
 {
     public class Book
     {
-        [JsonPropertyName("isbn")]
-        public int Isbn { get; set; }
+        [JsonPropertyName("isbn")] public int Isbn { get; set; }
 
         [Required(ErrorMessage = "Title Field is Required")]
         [JsonPropertyName("title")]
@@ -23,5 +22,7 @@ namespace Frontend.Models
         [Required(ErrorMessage = "Genre Field is Required")]
         [JsonPropertyName("genre")]
         public string Genre { get; set; }
+
+        [JsonPropertyName("authorId")] public int AuthorId { get; set; }
     }
 }

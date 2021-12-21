@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
-using Frontend.Models;
+using AuthorBlazor.Models;
 
-namespace Frontend.Data
+
+namespace AuthorBlazor.Data
 {
     public interface IAuthorService
     {

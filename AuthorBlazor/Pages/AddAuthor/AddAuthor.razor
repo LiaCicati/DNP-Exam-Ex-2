@@ -1,9 +1,10 @@
 @page "/addAuthor"
 @inject IAuthorService _authorService
 @inject NavigationManager NavigationManager
-@using Frontend.Models
 @using Microsoft.AspNetCore.Components
-@using Frontend.Data
+@using AuthorBlazor.Data
+@using AuthorBlazor.Models
+
 <section>
     <h3>Add Author</h3>
     <EditForm Model="@_newAuthor" OnValidSubmit="@AddNewAuthorAsync">

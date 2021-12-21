@@ -64,5 +64,37 @@ namespace AuthorAPI.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
+        [HttpGet]
+        [Route("{isbn:int}")]
+        public async Task<ActionResult<Book>> GetBookByIsbnAsync([FromRoute] int isbn)
+        {
+            try
+            {
+                Book book = await _bookRepository.GetBookByIsbnAsync(isbn);
+                return Ok(book);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPatch]
+        [Route("{isbn:int}")]
+        public async Task<ActionResult<Book>> UpdateBookAsync([FromBody] Book book)
+        {
+            try
+            {
+                Book updatedBook = await _bookRepository.UpdateBookAsync(book);
+                return Ok(updatedBook);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
     }
 }

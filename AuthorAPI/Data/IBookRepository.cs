@@ -9,5 +9,7 @@ namespace AuthorAPI.Data.Impl
         Task<IList<Book>> GetAllBooksAsync();
         Task<Book> AddBookAsync(int authorId, Book book);
         Task<Book> DeleteBookAsync(int isbn);
+        Task<Book> GetBookByIsbnAsync(int isbn);
+        Task<Book> UpdateBookAsync(Book book);
     }
 }
